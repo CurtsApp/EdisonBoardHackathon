@@ -3,12 +3,27 @@
 int leftIR = A4;
 int rightIR = A5;
 
+int leftBummper = 6;
+int rightBummper = 7;
+
 int directionA = 12;
 int directionB = 13;
 int speedA = 3;
 int speedB = 11;
 int brakeA = 9;
 int brakeB = 8;
+
+//Driving values
+double mapingSpeed = 0.8;
+double distanceToMaintainFromWall = 50;
+double wallFollowingLeeway = 10;
+
+//Mapping values
+double lastDistanceFromWall;
+double sensorOffset = 8; //Distance from center of robot to sensor
+
+int posX = 1000;
+int posY = 1000;
 
 
 int phase = 0; //The phase the room maping operation
@@ -25,6 +40,8 @@ void setup() {
   pinMode(leftIR, INPUT);
   pinMode(rightIR, INPUT); 
 
+  pinMode(leftBummper, INPUT);
+  pinMode(rightBummper, INPUT);
 
   pinMode(directionA, OUTPUT);
   pinMode(directionB, OUTPUT);
@@ -41,10 +58,9 @@ void loop() {
   Serial.print(",");
   Serial.print(convertAnalogToCm(analogRead(rightIR)));
   Serial.print(",");
-  Serial.print(analogRead(frontTrip));
+  Serial.print(digitalRead(leftBummper));
   Serial.print(",");
-  Serial.println(analogRead(downTrip));
-
+  Serial.print(digitalRead(rightBummper));
 
 }
 
@@ -64,46 +80,73 @@ double convertAnalogToCm (double raw) {
 
 
 //Driving Functions
-void tankDrive (double leftDrive, double rightDrive) {
+//Tank Drive
+void drive (double leftDrive, double rightDrive) {
   if(leftDrive > 0) {
     digitalWrite(directionA, HIGH);
-    analogWrite(speedA, percentToAnalog(leftDrive);
+    analogWrite(speedA, percentToAnalog(leftDrive));
   } else {
     digitalWrite(directionA, LOW);
-    analogWrite(speedA, percentToAnalog(leftDrive * -1);
+    analogWrite(speedA, percentToAnalog(leftDrive * -1));
   }
 
   if(rightDrive > 0) {
     digitalWrite(directionB, HIGH);
-    analogWrite(speedA, percentToAnalog(rightDrive);
+    analogWrite(speedA, percentToAnalog(rightDrive));
   } else {
     digitalWrite(directionB, LOW);
-    analogWrite(speedA, percentToAnalog(rightDrive * -1);
+    analogWrite(speedA, percentToAnalog(rightDrive * -1));
   }
   
-  analogWrite(speedA, percentToAnalog(leftDrive);
-  analogWrite(speedB, percentToAnalog(rightDrive);
+  analogWrite(speedA, percentToAnalog(leftDrive));
+  analogWrite(speedB, percentToAnalog(rightDrive));
   digitalWrite(brakeA, LOW);
   digitalWrite(brakeB, LOW);  
 }
 
 int percentToAnalog (double percent) {
-  return (int)percent/255;
+  return (int)percent * 100 /255;
 }
 
-//Sensor Functions
 
+//Sensor Functions
 double getDistanceRight() {
-  return convertAnalogToCm(analogRead(rightIR);
+  return convertAnalogToCm(analogRead(rightIR));
 }
 
 double getDistanceLeft() {
-  return convertAnalogToCm(analogRead(rightIR);
+  return convertAnalogToCm(analogRead(rightIR));
+}
+
+bool isHittingWall() {
+  return digitalRead(leftBummper) == HIGH || digitalRead(rightBummper) == HIGH;
+}
+
+
+//Mapping functions
+void addWallToMap(double distanceToWall, bool rightSide) {
+  
 }
 
 void startUp() {
+  //If we detect a wall to the right
+  if(getDistanceRight() > 0) {
+    //goto perimeter follow phase
+    lastDistanceFromWall = getDistanceRight();
+  } else {
+    //rotate until wall on right
+    drive(0.6, -0.6);
+  }
+}
+
+void followWall() {
+  //drive forward
+  //if wall is increasing in distance turn right
+  //if wall is decreasing indistance turn left
   
 }
+
+
 
 
 
