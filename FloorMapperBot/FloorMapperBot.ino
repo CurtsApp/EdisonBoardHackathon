@@ -3,15 +3,14 @@
 int leftIR = A4;
 int rightIR = A5;
 
-int leftBummper = 6;
-int rightBummper = 7;
-
 int directionA = 12;
-int directionB = 13;
+int directionB = 7;
 int speedA = 3;
-int speedB = 11;
+int speedB = 5; 
 int brakeA = 9;
 int brakeB = 8;
+
+//
 
 //Driving values
 double mapingSpeed = 0.8;
@@ -40,9 +39,6 @@ void setup() {
   pinMode(leftIR, INPUT);
   pinMode(rightIR, INPUT); 
 
-  pinMode(leftBummper, INPUT);
-  pinMode(rightBummper, INPUT);
-
   pinMode(directionA, OUTPUT);
   pinMode(directionB, OUTPUT);
   pinMode(speedA, OUTPUT);
@@ -58,10 +54,14 @@ void loop() {
   Serial.print(",");
   Serial.print(convertAnalogToCm(analogRead(rightIR)));
   Serial.print(",");
-  Serial.print(digitalRead(leftBummper));
-  Serial.print(",");
-  Serial.print(digitalRead(rightBummper));
-
+  
+  analogWrite(speedA, 2);
+  analogWrite(speedB, 2);
+  digitalWrite(directionB, HIGH);
+  digitalWrite(directionA, HIGH);
+  
+  
+  
 }
 
 
@@ -118,9 +118,6 @@ double getDistanceLeft() {
   return convertAnalogToCm(analogRead(rightIR));
 }
 
-bool isHittingWall() {
-  return digitalRead(leftBummper) == HIGH || digitalRead(rightBummper) == HIGH;
-}
 
 
 //Mapping functions
